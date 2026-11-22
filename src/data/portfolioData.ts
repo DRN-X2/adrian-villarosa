@@ -292,6 +292,14 @@ export const CERTIFICATES: CertificateItem[] = [
     skills: ['Agile', 'Project Lifecycle', 'Leadership'],
   },
   {
+    id: 'nbsc-sql-2026',
+    title: 'SQL Query Challenge (IT FEST 2026)',
+    issuer: 'NBSC — Institute for Computer Studies',
+    date: 'Apr 15, 2026',
+    image: '/assets/cert-sql-challenge.jpg',
+    skills: ['SQL', 'Database Querying', 'Competition'],
+  },
+  {
     id: 'ibm-cyber',
     title: 'Cybersecurity Fundamentals',
     issuer: 'IBM SkillsBuild',
