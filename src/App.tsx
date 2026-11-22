@@ -11,6 +11,7 @@ import {
   Linkedin,
   Mail,
   MapPin,
+  RefreshCw,
   Sparkles,
   Volume2,
   VolumeX,
@@ -50,6 +51,7 @@ export default function App() {
   );
   const [copied, setCopied] = useState(false);
   const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
+  const [certVariantIdx, setCertVariantIdx] = useState<Record<string, number>>({});
   const progressBarRef = useRef<HTMLDivElement>(null);
 
   const toggleSound = () => {
@@ -513,66 +515,102 @@ export default function App() {
             </div>
           </div>
 
-          <div className="grid-3">
-            {CERTIFICATES.map((cert, index) => (
-              <div
-                key={cert.id}
-                data-reveal
-                style={{ '--reveal-delay': `${index * 80}ms` } as React.CSSProperties}
-                className="card reveal-item"
-              >
-                {cert.image && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setLightbox({
-                        title: cert.title,
-                        subtitle: `${cert.issuer} · ${cert.date}`,
-                        image: cert.image!,
-                        link: cert.verifyUrl,
-                      })
-                    }
-                    style={{ border: 'none', padding: 0, background: 'transparent' }}
-                    aria-label={`Preview ${cert.title} certificate`}
-                  >
-                    <img
-                      src={cert.image}
-                      alt={cert.title}
-                      loading="lazy"
-                      className="media-thumb"
-                    />
-                  </button>
-                )}
+          <div className="grid-2">
+            {CERTIFICATES.map((cert, index) => {
+              const variants = cert.images;
+              const activeIdx = certVariantIdx[cert.id] ?? 0;
+              const activeImg = variants ? variants[activeIdx % variants.length].src : cert.image;
+              const activeLabel = variants ? variants[activeIdx % variants.length].label : null;
 
-                <div className="card-top">
-                  <span className="badge">{cert.issuer}</span>
-                  <span className="card-year">{cert.date}</span>
+              const cycleCert = (e: React.MouseEvent) => {
+                e.stopPropagation();
+                if (!variants) return;
+                playKeyDown('normal');
+                setCertVariantIdx((prev) => ({
+                  ...prev,
+                  [cert.id]: ((prev[cert.id] ?? 0) + 1) % variants.length,
+                }));
+              };
+
+              return (
+                <div
+                  key={cert.id}
+                  data-reveal
+                  style={{ '--reveal-delay': `${(index % 2) * 80}ms` } as React.CSSProperties}
+                  className="card reveal-item"
+                >
+                  {activeImg && (
+                    <div style={{ position: 'relative' }}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setLightbox({
+                            title: cert.title,
+                            subtitle: `${cert.issuer} · ${cert.date}`,
+                            image: activeImg,
+                            link: cert.verifyUrl,
+                          })
+                        }
+                        style={{ border: 'none', padding: 0, background: 'transparent', width: '100%' }}
+                        aria-label={`Preview ${cert.title} certificate`}
+                      >
+                        <img
+                          src={activeImg}
+                          alt={cert.title}
+                          loading="lazy"
+                          className="media-thumb"
+                        />
+                      </button>
+
+                      {variants && variants.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={cycleCert}
+                          className="logo-stage-pill"
+                          style={{
+                            border: 'none',
+                            background: 'rgba(17, 17, 17, 0.82)',
+                            color: '#ffffff',
+                            cursor: 'pointer',
+                          }}
+                          aria-label={`Switch ${cert.title} certificate view`}
+                        >
+                          <RefreshCw size={11} /> {activeLabel}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="card-top">
+                    <span className="badge">{cert.issuer}</span>
+                    <span className="card-year">{cert.date}</span>
+                  </div>
+
+                  <h3 className="card-title" style={{ fontSize: '1.2rem' }}>
+                    {cert.title}
+                  </h3>
+
+                  <div className="pill-list">
+                    {cert.skills.map((s) => (
+                      <span key={s} className="tech-pill">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+
+                  {cert.verifyUrl && (
+                    <a
+                      href={cert.verifyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="card-footer-hint"
+                    >
+                      Verify credential <ExternalLink size={14} />
+                    </a>
+                  )}
                 </div>
-
-                <h3 className="card-title" style={{ fontSize: '1.2rem' }}>
-                  {cert.title}
-                </h3>
-
-                <div className="pill-list">
-                  {cert.skills.map((s) => (
-                    <span key={s} className="tech-pill">
-                      {s}
-                    </span>
-                  ))}
-                </div>
-
-                {cert.verifyUrl && (
-                  <a
-                    href={cert.verifyUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="card-footer-hint"
-                  >
-                    Verify credential <ExternalLink size={14} />
-                  </a>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 

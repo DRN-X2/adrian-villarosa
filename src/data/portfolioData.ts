@@ -42,6 +42,7 @@ export interface CertificateItem {
   date: string;
   verifyUrl?: string;
   image?: string;
+  images?: { src: string; label: string }[];
   skills: string[];
 }
 
@@ -263,6 +264,17 @@ export const CERTIFICATES: CertificateItem[] = [
     verifyUrl: 'https://www.credly.com/go/8NaMH3gM',
     image: '/assets/cert-ibm-cybersecurity.png',
     skills: ['Cybersecurity', 'Cryptography', 'Threat Defense'],
+  },
+  {
+    id: 'cisco-prompt',
+    title: 'Prompt Like an Engineer',
+    issuer: 'Cisco Networking Academy · DICT-ITU',
+    date: 'Sep 2026',
+    images: [
+      { src: '/assets/cert-cisco-prompt-1.jpg', label: 'Certificate 1/2' },
+      { src: '/assets/cert-cisco-prompt-2.jpg', label: 'Details 2/2' },
+    ],
+    skills: ['Prompt Engineering', 'LLMs', 'AI Evaluation'],
   },
 ];
 
