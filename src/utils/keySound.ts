@@ -8,11 +8,6 @@ export function setSoundEnabled(enabled: boolean): void {
   soundEnabled = enabled;
 }
 
-/**
- * Encodes mono Float32 PCM samples into a base64 WAV data URI.
- * Uses native HTMLAudioElement playback so it works reliably in Brave,
- * Chrome, Safari, and mobile browsers with zero AudioContext resume races.
- */
 function encodeWavDataUri(samples: Float32Array, sampleRate: number): string {
   const numSamples = samples.length;
   const buffer = new ArrayBuffer(44 + numSamples * 2);
@@ -28,9 +23,9 @@ function encodeWavDataUri(samples: Float32Array, sampleRate: number): string {
   view.setUint32(4, 36 + numSamples * 2, true);
   writeStr(8, 'WAVE');
   writeStr(12, 'fmt ');
-  view.setUint32(16, 16, true); // PCM chunk size
-  view.setUint16(20, 1, true); // PCM format
-  view.setUint16(22, 1, true); // Mono
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
   view.setUint32(24, sampleRate, true);
   view.setUint32(28, sampleRate * 2, true);
   view.setUint16(32, 2, true);
@@ -51,60 +46,77 @@ function encodeWavDataUri(samples: Float32Array, sampleRate: number): string {
   return 'data:audio/wav;base64,' + btoa(binary);
 }
 
+/**
+ * Acoustic synthesis of a lubed, PE-foam "creamy / thocky" PBT mechanical switch:
+ * - Warm low case thump (140Hz -> 60Hz)
+ * - Marbly PE-foam mid formant pop (480Hz -> 240Hz)
+ * - Heavily low-passed soft stem impact (no harsh static)
+ * - Smooth 1.2ms attack envelope to eliminate digital clicks
+ */
 function synthMechanicalKey(type: 'heavy' | 'normal' | 'up'): string {
   const sr = 44100;
-  const dur = type === 'heavy' ? 0.085 : type === 'normal' ? 0.065 : 0.04;
+  const dur = type === 'heavy' ? 0.095 : type === 'normal' ? 0.075 : 0.048;
   const len = Math.floor(sr * dur);
   const samples = new Float32Array(len);
 
-  // Deterministic pseudo-random noise for crisp plastic click
-  let seed = type === 'heavy' ? 1337 : type === 'normal' ? 7331 : 4242;
+  let seed = type === 'heavy' ? 2026 : type === 'normal' ? 4096 : 8192;
   const rand = () => {
     seed = (seed * 16807) % 2147483647;
     return (seed / 2147483647) * 2 - 1;
   };
 
-  let lp = 0;
-  let phaseBody = 0;
-  let phaseSnap = 0;
+  // 2-stage low-pass filter state for warm, creamy (zero-hiss) transient
+  let lp1 = 0;
+  let lp2 = 0;
+  let phaseThock = 0;
+  let phaseMarble = 0;
 
   for (let i = 0; i < len; i++) {
     const t = i / sr;
+    // Soft 1.2ms attack ramp for creamy rounded impact
+    const attack = Math.min(1, t / 0.0012);
+
+    const n = rand();
+    // Heavy low-pass (~950Hz cutoff) -> warm wood/PBT knock, zero harsh hiss
+    const alpha = type === 'up' ? 0.22 : 0.16;
+    lp1 += alpha * (n - lp1);
+    lp2 += alpha * (lp1 - lp2);
 
     if (type === 'up') {
-      // Crisp lighter top-out clack
-      const env = Math.exp(-t * 140);
-      const n = rand();
-      lp = lp * 0.45 + n * 0.55;
-      phaseSnap += (2 * Math.PI * (1600 * Math.exp(-t * 35) + 420)) / sr;
-      samples[i] = (lp * 0.65 + Math.sin(phaseSnap) * 0.35) * env;
+      // Creamy muted top-out "tock"
+      const fMarble = 290 + 360 * Math.exp(-t * 110);
+      phaseMarble += (2 * Math.PI * fMarble) / sr;
+      const marble = Math.sin(phaseMarble) * Math.exp(-t * 115) * 0.65;
+      const tap = lp2 * Math.exp(-t * 150) * 0.55;
+      samples[i] = (marble + tap) * attack;
     } else {
-      // Rich PBT mechanical bottom-out "thock"
-      const fStart = type === 'heavy' ? 210 : 260;
-      const fEnd = type === 'heavy' ? 58 : 78;
-      const freqBody = fEnd + (fStart - fEnd) * Math.exp(-t * 65);
-      phaseBody += (2 * Math.PI * freqBody) / sr;
-      const bodyEnv = Math.exp(-t * (type === 'heavy' ? 42 : 55));
-      const body = Math.sin(phaseBody) * bodyEnv * 0.78;
+      const isHeavy = type === 'heavy';
 
-      // Tactile stem click transient (first 12ms)
-      const clickEnv = Math.exp(-t * 240);
-      const n = rand();
-      lp = lp * 0.5 + n * 0.5;
-      phaseSnap += (2 * Math.PI * (type === 'heavy' ? 1250 : 1650)) / sr;
-      const click = (lp * 0.6 + Math.sin(phaseSnap) * 0.4) * clickEnv * 0.85;
+      // 1. Deep damped case thock (PBT + deskmat resonance)
+      const fThock = (isHeavy ? 54 : 68) + (isHeavy ? 95 : 115) * Math.exp(-t * 58);
+      phaseThock += (2 * Math.PI * fThock) / sr;
+      const thock = Math.sin(phaseThock) * Math.exp(-t * (isHeavy ? 34 : 44)) * 0.85;
 
-      samples[i] = body + click;
+      // 2. Signature "creamy / marbly" PE-foam mid-pop (440-580Hz)
+      const fMarble = (isHeavy ? 210 : 250) + (isHeavy ? 320 : 390) * Math.exp(-t * 135);
+      phaseMarble += (2 * Math.PI * fMarble) / sr;
+      const marble = Math.sin(phaseMarble) * Math.exp(-t * (isHeavy ? 88 : 105)) * 0.68;
+
+      // 3. Soft lubed stem bottom-out knock
+      const knock = lp2 * Math.exp(-t * 145) * 0.52;
+
+      // Subtle warm saturation (soft-clip) for analog creaminess
+      const raw = (thock + marble + knock) * attack;
+      samples[i] = Math.tanh(raw * 1.15);
     }
   }
 
-  // Normalize peak so it is crisp & audible on laptop/phone speakers
   let peak = 0;
   for (let i = 0; i < len; i++) {
     const a = Math.abs(samples[i]);
     if (a > peak) peak = a;
   }
-  const targetPeak = type === 'up' ? 0.55 : 0.92;
+  const targetPeak = type === 'up' ? 0.45 : 0.9;
   if (peak > 0) {
     const gain = targetPeak / peak;
     for (let i = 0; i < len; i++) samples[i] *= gain;
@@ -137,7 +149,7 @@ class SoundPool {
     this.idx = (this.idx + 1) % this.pool.length;
     try {
       audio.currentTime = 0;
-      audio.playbackRate = 0.96 + Math.random() * 0.08;
+      audio.playbackRate = 0.97 + Math.random() * 0.06;
       const p = audio.play();
       if (p) p.catch(() => {});
     } catch {
