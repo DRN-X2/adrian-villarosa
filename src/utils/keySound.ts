@@ -47,79 +47,49 @@ function encodeWavDataUri(samples: Float32Array, sampleRate: number): string {
 }
 
 /**
- * Acoustic synthesis of a lubed, PE-foam "creamy / thocky" PBT mechanical switch:
- * - Warm low case thump (140Hz -> 60Hz)
- * - Marbly PE-foam mid formant pop (480Hz -> 240Hz)
- * - Heavily low-passed soft stem impact (no harsh static)
- * - Smooth 1.2ms attack envelope to eliminate digital clicks
+ * Authentic Game Boy DMG 8-bit pulse wave (25% duty cycle) sound effects:
+ * - 'heavy' (Dino / Portrait): Iconic 2-note retro confirm/chime (B5 -> E6)
+ * - 'normal' (CTA buttons): Crisp Game Boy menu blip (E5 -> A5)
  */
-function synthMechanicalKey(type: 'heavy' | 'normal' | 'up'): string {
+function synthGameBoySfx(type: 'heavy' | 'normal'): string {
   const sr = 44100;
-  const dur = type === 'heavy' ? 0.095 : type === 'normal' ? 0.075 : 0.048;
+  const dur = type === 'heavy' ? 0.135 : 0.068;
   const len = Math.floor(sr * dur);
   const samples = new Float32Array(len);
 
-  let seed = type === 'heavy' ? 2026 : type === 'normal' ? 4096 : 8192;
-  const rand = () => {
-    seed = (seed * 16807) % 2147483647;
-    return (seed / 2147483647) * 2 - 1;
-  };
-
-  // 2-stage low-pass filter state for warm, creamy (zero-hiss) transient
-  let lp1 = 0;
-  let lp2 = 0;
-  let phaseThock = 0;
-  let phaseMarble = 0;
+  const duty = 0.25; // Classic Game Boy 25% pulse wave
+  let phase = 0;
+  let lp = 0;
 
   for (let i = 0; i < len; i++) {
     const t = i / sr;
-    // Soft 1.2ms attack ramp for creamy rounded impact
-    const attack = Math.min(1, t / 0.0012);
 
-    const n = rand();
-    // Heavy low-pass (~950Hz cutoff) -> warm wood/PBT knock, zero harsh hiss
-    const alpha = type === 'up' ? 0.22 : 0.16;
-    lp1 += alpha * (n - lp1);
-    lp2 += alpha * (lp1 - lp2);
+    let freq: number;
+    let env: number;
 
-    if (type === 'up') {
-      // Creamy muted top-out "tock"
-      const fMarble = 290 + 360 * Math.exp(-t * 110);
-      phaseMarble += (2 * Math.PI * fMarble) / sr;
-      const marble = Math.sin(phaseMarble) * Math.exp(-t * 115) * 0.65;
-      const tap = lp2 * Math.exp(-t * 150) * 0.55;
-      samples[i] = (marble + tap) * attack;
+    if (type === 'heavy') {
+      // Iconic 2-step Game Boy A-button / coin chime: B5 (987.77 Hz) -> E6 (1318.51 Hz)
+      const split = 0.042;
+      freq = t < split ? 987.77 : 1318.51;
+      const localT = t < split ? t : t - split;
+      env = t < split ? Math.exp(-localT * 10) : Math.exp(-localT * 24);
     } else {
-      const isHeavy = type === 'heavy';
-
-      // 1. Deep damped case thock (PBT + deskmat resonance)
-      const fThock = (isHeavy ? 54 : 68) + (isHeavy ? 95 : 115) * Math.exp(-t * 58);
-      phaseThock += (2 * Math.PI * fThock) / sr;
-      const thock = Math.sin(phaseThock) * Math.exp(-t * (isHeavy ? 34 : 44)) * 0.85;
-
-      // 2. Signature "creamy / marbly" PE-foam mid-pop (440-580Hz)
-      const fMarble = (isHeavy ? 210 : 250) + (isHeavy ? 320 : 390) * Math.exp(-t * 135);
-      phaseMarble += (2 * Math.PI * fMarble) / sr;
-      const marble = Math.sin(phaseMarble) * Math.exp(-t * (isHeavy ? 88 : 105)) * 0.68;
-
-      // 3. Soft lubed stem bottom-out knock
-      const knock = lp2 * Math.exp(-t * 145) * 0.52;
-
-      // Subtle warm saturation (soft-clip) for analog creaminess
-      const raw = (thock + marble + knock) * attack;
-      samples[i] = Math.tanh(raw * 1.15);
+      // Snappy Game Boy D-pad / UI select blip: E5 (659.25 Hz) -> A5 (880 Hz)
+      const split = 0.022;
+      freq = t < split ? 659.25 : 880.0;
+      env = Math.exp(-t * 36);
     }
-  }
 
-  let peak = 0;
-  for (let i = 0; i < len; i++) {
-    const a = Math.abs(samples[i]);
-    if (a > peak) peak = a;
-  }
-  const targetPeak = type === 'up' ? 0.45 : 0.9;
-  if (peak > 0) {
-    const gain = targetPeak / peak;
-    for (let i = 0; i < len; i++) samples[i] *= gain;
+    phase = (phase + freq / sr) % 1;
+    const pulse = phase < duty ? 1 : -1;
+
+    // Gentle low-pass to match warm Game Boy speaker roll-off (no harsh aliasing)
+    lp += 0.35 * (pulse - lp);
+
+    // Tiny 1.5ms fade-in/out to prevent speaker pop
+    const fadeIn = Math.min(1, t / 0.0015);
+    const fadeOut = Math.min(1, (dur - t) / 0.003);
+    samples[i] = lp * env * fadeIn * fadeOut * 0.42;
   }
 
   return encodeWavDataUri(samples, sr);
@@ -129,16 +99,16 @@ class SoundPool {
   private pool: HTMLAudioElement[] = [];
   private idx = 0;
   private uri: string | null = null;
-  private type: 'heavy' | 'normal' | 'up';
+  private type: 'heavy' | 'normal';
 
-  constructor(type: 'heavy' | 'normal' | 'up') {
+  constructor(type: 'heavy' | 'normal') {
     this.type = type;
   }
 
   play() {
     if (typeof window === 'undefined' || !soundEnabled) return;
     if (!this.uri) {
-      this.uri = synthMechanicalKey(this.type);
+      this.uri = synthGameBoySfx(this.type);
       for (let i = 0; i < 6; i++) {
         const a = new Audio(this.uri);
         a.preload = 'auto';
@@ -149,7 +119,6 @@ class SoundPool {
     this.idx = (this.idx + 1) % this.pool.length;
     try {
       audio.currentTime = 0;
-      audio.playbackRate = 0.97 + Math.random() * 0.06;
       const p = audio.play();
       if (p) p.catch(() => {});
     } catch {
@@ -160,7 +129,6 @@ class SoundPool {
 
 const heavyPool = new SoundPool('heavy');
 const normalPool = new SoundPool('normal');
-const upPool = new SoundPool('up');
 
 export function playKeyDown(weight: 'heavy' | 'normal' = 'normal'): void {
   if (weight === 'heavy') heavyPool.play();
@@ -168,5 +136,5 @@ export function playKeyDown(weight: 'heavy' | 'normal' = 'normal'): void {
 }
 
 export function playKeyUp(): void {
-  upPool.play();
+  // Game Boy buttons chime cleanly on press only
 }
