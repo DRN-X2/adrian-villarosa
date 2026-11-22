@@ -178,6 +178,10 @@ export const PROJECTS: ProjectItem[] = [
     stack: ['React', 'TypeScript', 'Supabase', 'PL/pgSQL', 'Radix UI', 'PWA'],
     githubUrl: 'https://github.com/token-maxxers/KableHero_Lite',
     accentBg: '#FEFCE8',
+    logoVariants: [
+      { src: '/assets/logo-kablehero.png', bg: '#FFFFFF', label: 'Light' },
+      { src: '/assets/logo-kablehero.png', bg: '#FEF3C7', label: 'Amber' },
+    ],
   },
   {
     id: 'arduino-robot',
