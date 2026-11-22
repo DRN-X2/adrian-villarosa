@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MASCOT_FACTS } from '../data/portfolioData';
+import { playKeyDown, playKeyUp } from '../utils/keySound';
 
 const REACTIONS = ['ROAR!', '</>', 'SHIP IT!', 'GG!', '120Hz', 'BOOM!'];
 
@@ -34,10 +35,12 @@ export function CluckyMascot() {
 
       <button
         type="button"
+        onPointerDown={() => playKeyDown('heavy')}
+        onPointerUp={() => playKeyUp()}
         onClick={handleTap}
-        className={`mascot-btn mascot-btn-img ${bouncing ? 'is-bouncing' : ''}`}
+        className={`mascot-btn mascot-keycap ${bouncing ? 'is-bouncing' : ''}`}
         onAnimationEnd={() => setBouncing(false)}
-        aria-label="Interactive developer dinosaur mascot — click for fun facts about Adrian"
+        aria-label="Interactive mechanical dinosaur keycap — click for fun facts about Adrian"
       >
         <img
           src={isRoaring ? '/assets/dino-roar.jpg' : '/assets/dino-mascot.jpg'}

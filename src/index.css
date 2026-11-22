@@ -120,6 +120,27 @@ button {
   transform: scale(1.04);
 }
 
+.nav-sound-btn {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  transition: transform 0.18s var(--spring), background-color 0.15s ease;
+}
+
+.nav-sound-btn:hover {
+  transform: scale(1.08);
+}
+
+.nav-sound-btn:active {
+  transform: scale(0.92);
+}
+
 /* === HERO === */
 .hero {
   position: relative;
@@ -221,19 +242,39 @@ button {
 
 .hero-avatar-btn {
   border: none;
-  padding: 4px;
+  padding: 5px;
   background: var(--accent);
-  border-radius: 30px;
+  border-radius: 26px;
   width: clamp(92px, 12vw, 118px);
   height: clamp(92px, 12vw, 118px);
   flex-shrink: 0;
-  overflow: hidden;
-  transition: transform 0.24s var(--spring);
+  overflow: visible;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
   will-change: transform;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.hero-avatar-btn:hover {
-  transform: scale(1.06) rotate(-2deg);
+.avatar-keycap {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    0 7px 0 #991b1b,
+    0 11px 18px rgba(17, 17, 17, 0.16);
+}
+
+.avatar-keycap:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    0 9px 0 #991b1b,
+    0 14px 20px rgba(17, 17, 17, 0.18);
+}
+
+.avatar-keycap:active {
+  transform: translateY(6px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    0 1px 0 #991b1b,
+    0 2px 4px rgba(17, 17, 17, 0.12);
 }
 
 .hero-avatar {
@@ -241,7 +282,7 @@ button {
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  border-radius: 26px;
+  border-radius: 21px;
   display: block;
 }
 
@@ -327,6 +368,82 @@ button {
   color: var(--ink);
 }
 
+/* === MECHANICAL KEYCAP BUTTONS (Keeby-inspired) === */
+.keycap-btn {
+  border-radius: 16px;
+  transition: transform 0.07s ease, box-shadow 0.07s ease;
+}
+
+.keycap-red {
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.28),
+    0 5px 0 #991b1b,
+    0 8px 14px rgba(17, 17, 17, 0.12);
+}
+
+.keycap-red:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.32),
+    0 6px 0 #991b1b,
+    0 10px 16px rgba(17, 17, 17, 0.14);
+}
+
+.keycap-red:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 0 #991b1b,
+    0 2px 4px rgba(17, 17, 17, 0.1);
+}
+
+.keycap-dark {
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.16),
+    0 5px 0 #000000,
+    0 8px 14px rgba(17, 17, 17, 0.14);
+}
+
+.keycap-dark:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.2),
+    0 6px 0 #000000,
+    0 10px 16px rgba(17, 17, 17, 0.16);
+}
+
+.keycap-dark:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 1px 0 #000000,
+    0 2px 4px rgba(17, 17, 17, 0.1);
+}
+
+.keycap-light {
+  background: #f4f4f5;
+  box-shadow:
+    inset 0 1.5px 0 #ffffff,
+    0 5px 0 #c4c4c8,
+    0 8px 14px rgba(17, 17, 17, 0.08);
+}
+
+.keycap-light:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1.5px 0 #ffffff,
+    0 6px 0 #c4c4c8,
+    0 10px 16px rgba(17, 17, 17, 0.1);
+}
+
+.keycap-light:active {
+  transform: translateY(4px);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 1px 0 #c4c4c8,
+    0 2px 4px rgba(17, 17, 17, 0.08);
+}
+
 /* === INTERACTIVE MASCOT === */
 .hero-toy {
   position: relative;
@@ -358,24 +475,43 @@ button {
 .mascot-btn {
   position: relative;
   background: #e8e8e8;
-  border: none;
-  border-radius: 38px;
-  padding: 6px;
-  width: 212px;
-  height: 212px;
+  border: 2px solid #d4d4d8;
+  border-radius: 34px;
+  padding: 10px;
+  width: 214px;
+  height: 214px;
   display: grid;
   place-items: center;
-  transition: transform 0.25s var(--spring);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
   will-change: transform;
   -webkit-tap-highlight-color: transparent;
 }
 
-.mascot-btn:hover {
-  transform: scale(1.05) rotate(-2deg);
+.mascot-keycap {
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.85),
+    0 10px 0 #b8b8be,
+    0 16px 24px rgba(17, 17, 17, 0.14);
 }
 
-.mascot-btn.is-bouncing {
-  animation: cluckyBounce 0.42s var(--spring);
+.mascot-keycap:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.9),
+    0 12px 0 #b8b8be,
+    0 18px 26px rgba(17, 17, 17, 0.16);
+}
+
+.mascot-keycap:active {
+  transform: translateY(8px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.6),
+    0 2px 0 #b8b8be,
+    0 4px 8px rgba(17, 17, 17, 0.1);
+}
+
+.mascot-btn.is-bouncing .mascot-img {
+  animation: cluckyBounce 0.34s var(--spring);
 }
 
 .mascot-img {

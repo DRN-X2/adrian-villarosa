@@ -12,10 +12,13 @@ import {
   Mail,
   MapPin,
   Sparkles,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import { CluckyMascot } from './components/CluckyMascot';
 import { ProjectLogoStage } from './components/ProjectLogoStage';
+import { isSoundEnabled, playKeyDown, playKeyUp, setSoundEnabled } from './utils/keySound';
 import {
   AWARDS,
   CERTIFICATES,
@@ -46,6 +49,14 @@ export default function App() {
     null
   );
   const [copied, setCopied] = useState(false);
+  const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
+
+  const toggleSound = () => {
+    const next = !soundOn;
+    setSoundEnabled(next);
+    setSoundOn(next);
+    if (next) playKeyDown('normal');
+  };
 
   const visibleProjects =
     category === 'All' ? PROJECTS : PROJECTS.filter((p) => p.category === category);
@@ -104,9 +115,23 @@ export default function App() {
               {item.label}
             </a>
           ))}
-          <a href={PROFILE.resumePdf} download className="nav-link nav-resume">
+          <a
+            href={PROFILE.resumePdf}
+            download
+            className="nav-link nav-resume"
+            onPointerDown={() => playKeyDown('normal')}
+          >
             Resume
           </a>
+          <button
+            type="button"
+            onClick={toggleSound}
+            className="nav-sound-btn"
+            aria-label={soundOn ? 'Mute mechanical key sounds' : 'Unmute mechanical key sounds'}
+            title={soundOn ? 'Key sound: ON' : 'Key sound: OFF'}
+          >
+            {soundOn ? <Volume2 size={15} /> : <VolumeX size={15} />}
+          </button>
         </nav>
       </header>
 
@@ -123,7 +148,9 @@ export default function App() {
             <div className="hero-identity">
               <button
                 type="button"
-                className="hero-avatar-btn"
+                className="hero-avatar-btn avatar-keycap"
+                onPointerDown={() => playKeyDown('heavy')}
+                onPointerUp={() => playKeyUp()}
                 onClick={() =>
                   setLightbox({
                     title: PROFILE.name,
@@ -157,16 +184,41 @@ export default function App() {
             </p>
 
             <div className="cta-row">
-              <a href={PROFILE.resumePdf} download className="btn btn-primary">
+              <a
+                href={PROFILE.resumePdf}
+                download
+                className="btn btn-primary keycap-btn keycap-red"
+                onPointerDown={() => playKeyDown('normal')}
+                onPointerUp={() => playKeyUp()}
+              >
                 <Download size={17} /> Download Resume
               </a>
-              <a href={PROFILE.github} target="_blank" rel="noreferrer" className="btn btn-dark">
+              <a
+                href={PROFILE.github}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-dark keycap-btn keycap-dark"
+                onPointerDown={() => playKeyDown('normal')}
+                onPointerUp={() => playKeyUp()}
+              >
                 <Github size={17} /> GitHub
               </a>
-              <a href={PROFILE.linkedin} target="_blank" rel="noreferrer" className="btn btn-soft">
+              <a
+                href={PROFILE.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-soft keycap-btn keycap-light"
+                onPointerDown={() => playKeyDown('normal')}
+                onPointerUp={() => playKeyUp()}
+              >
                 <Linkedin size={17} /> LinkedIn
               </a>
-              <a href="#contact" className="btn btn-soft">
+              <a
+                href="#contact"
+                className="btn btn-soft keycap-btn keycap-light"
+                onPointerDown={() => playKeyDown('normal')}
+                onPointerUp={() => playKeyUp()}
+              >
                 <Mail size={17} /> Contact
               </a>
             </div>
