@@ -239,6 +239,25 @@ export const AWARDS: AwardItem[] = [
 
 export const CERTIFICATES: CertificateItem[] = [
   {
+    id: 'gdg-devfest-2026',
+    title: 'DevFest Cagayan de Oro 2026',
+    issuer: 'Google Developer Group (GDG) CDO',
+    date: 'Nov 2026',
+    images: [
+      { src: '/assets/cert-devfest-main.jpg', label: 'Main Event 1/2' },
+      { src: '/assets/cert-devfest-roadshow.jpg', label: 'Bukidnon Stop 2/2' },
+    ],
+    skills: ['Google Tech', 'Agentic AI', 'Buildathon'],
+  },
+  {
+    id: 'leb-data',
+    title: 'Results & Data Interpretation',
+    issuer: 'London Examinations Board',
+    date: 'Oct 2026',
+    image: '/assets/cert-leb-data.jpg',
+    skills: ['Data Analysis', 'Research', 'Interpretation'],
+  },
+  {
     id: 'google-python',
     title: 'Crash Course on Python',
     issuer: 'Google (Coursera)',
@@ -246,6 +265,17 @@ export const CERTIFICATES: CertificateItem[] = [
     verifyUrl: 'https://coursera.org/verify/IZXFMY12TYPQ',
     image: '/assets/cert-google-python.jpg?v=2',
     skills: ['Python', 'Data Structures', 'Automation'],
+  },
+  {
+    id: 'cisco-prompt',
+    title: 'Prompt Like an Engineer',
+    issuer: 'Cisco Networking Academy · DICT-ITU',
+    date: 'Sep 2026',
+    images: [
+      { src: '/assets/cert-cisco-prompt-1.jpg', label: 'Certificate 1/2' },
+      { src: '/assets/cert-cisco-prompt-2.jpg', label: 'Details 2/2' },
+    ],
+    skills: ['Prompt Engineering', 'LLMs', 'AI Evaluation'],
   },
   {
     id: 'google-pm',
@@ -264,36 +294,6 @@ export const CERTIFICATES: CertificateItem[] = [
     verifyUrl: 'https://www.credly.com/go/8NaMH3gM',
     image: '/assets/cert-ibm-cybersecurity.png',
     skills: ['Cybersecurity', 'Cryptography', 'Threat Defense'],
-  },
-  {
-    id: 'cisco-prompt',
-    title: 'Prompt Like an Engineer',
-    issuer: 'Cisco Networking Academy · DICT-ITU',
-    date: 'Sep 2026',
-    images: [
-      { src: '/assets/cert-cisco-prompt-1.jpg', label: 'Certificate 1/2' },
-      { src: '/assets/cert-cisco-prompt-2.jpg', label: 'Details 2/2' },
-    ],
-    skills: ['Prompt Engineering', 'LLMs', 'AI Evaluation'],
-  },
-  {
-    id: 'gdg-devfest-2026',
-    title: 'DevFest Cagayan de Oro 2026',
-    issuer: 'Google Developer Group (GDG) CDO',
-    date: 'Nov 2026',
-    images: [
-      { src: '/assets/cert-devfest-main.jpg', label: 'Main Event 1/2' },
-      { src: '/assets/cert-devfest-roadshow.jpg', label: 'Bukidnon Stop 2/2' },
-    ],
-    skills: ['Google Tech', 'Agentic AI', 'Buildathon'],
-  },
-  {
-    id: 'leb-data',
-    title: 'Results & Data Interpretation',
-    issuer: 'London Examinations Board',
-    date: 'Oct 2026',
-    image: '/assets/cert-leb-data.jpg',
-    skills: ['Data Analysis', 'Research', 'Interpretation'],
   },
 ];
 
