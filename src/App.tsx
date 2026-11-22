@@ -513,7 +513,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="grid-2">
+          <div className="grid-3">
             {CERTIFICATES.map((cert, index) => (
               <div
                 key={cert.id}

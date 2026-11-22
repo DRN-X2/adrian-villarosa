@@ -255,6 +255,15 @@ export const CERTIFICATES: CertificateItem[] = [
     image: '/assets/cert-google-pm.jpg?v=2',
     skills: ['Agile', 'Project Lifecycle', 'Leadership'],
   },
+  {
+    id: 'ibm-cyber',
+    title: 'Cybersecurity Fundamentals',
+    issuer: 'IBM SkillsBuild',
+    date: 'Jan 2025',
+    verifyUrl: 'https://www.credly.com/go/8NaMH3gM',
+    image: '/assets/cert-ibm-cybersecurity.png',
+    skills: ['Cybersecurity', 'Cryptography', 'Threat Defense'],
+  },
 ];
 
 export const SKILL_GROUPS = [
