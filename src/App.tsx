@@ -83,23 +83,39 @@ export default function App() {
     };
   }, []);
 
-  // Scroll-reveal IntersectionObserver (triggers once per element, re-runs on filter change)
+  // Scroll-reveal IntersectionObserver using data-visible (never overwritten by React re-renders)
   useEffect(() => {
-    const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    const targets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+    const reveal = (el: HTMLElement) => {
+      el.dataset.visible = 'true';
+    };
+
+    if (typeof IntersectionObserver === 'undefined') {
+      targets.forEach(reveal);
+      return;
+    }
+
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
+            reveal(entry.target as HTMLElement);
             io.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.08, rootMargin: '0px 0px -24px 0px' }
+      { threshold: 0.01, rootMargin: '60px 0px 60px 0px' }
     );
+
     targets.forEach((el) => {
-      if (!el.classList.contains('is-visible')) io.observe(el);
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight + 60 && rect.bottom > -60) {
+        reveal(el);
+      } else if (el.dataset.visible !== 'true') {
+        io.observe(el);
+      }
     });
+
     return () => io.disconnect();
   }, [category]);
 

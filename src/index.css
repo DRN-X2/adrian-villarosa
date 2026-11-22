@@ -1200,7 +1200,7 @@ button {
   will-change: transform, opacity;
 }
 
-.reveal-item.is-visible {
+.reveal-item[data-visible='true'] {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
 }
@@ -1226,6 +1226,11 @@ button {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reveal-item,
+  .hero-stagger {
+    opacity: 1 !important;
+    transform: none !important;
   }
   *,
   *::before,
