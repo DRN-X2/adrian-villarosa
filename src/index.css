@@ -1093,6 +1093,136 @@ button {
   margin-top: 28px;
 }
 
+/* === 1. TOP SCROLL PROGRESS BAR (GPU scaleX) === */
+.scroll-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 70;
+  pointer-events: none;
+  background: rgba(17, 17, 17, 0.06);
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
+/* === 2. HERO CASCADE + PULSING OPEN-TO-WORK DOT === */
+.hero-stagger {
+  opacity: 0;
+  animation: heroEnter 0.52s var(--spring) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.status-dot-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 10px;
+}
+
+.status-dot-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: statusPulse 1.8s var(--ease-out) infinite;
+}
+
+@keyframes statusPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* === 3. 8-BIT PIXEL SPARK BURST ON DINO CLICK === */
+.mascot-spark-stage {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spark-pixel {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 5;
+  will-change: transform, opacity;
+  animation: sparkBurst 0.52s var(--ease-out) forwards;
+}
+
+@keyframes sparkBurst {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--tx), var(--ty), 0) scale(0.35);
+  }
+}
+
+/* === 4. SCROLL-REVEAL STAGGER === */
+.reveal-item {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0) scale(0.98);
+  transition:
+    opacity 0.45s var(--ease-out) var(--reveal-delay, 0ms),
+    transform 0.5s var(--spring) var(--reveal-delay, 0ms);
+  will-change: transform, opacity;
+}
+
+.reveal-item.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* === 5. PLAYFUL SKILL PILL POP === */
+.skill-pill-pop {
+  border: none;
+  transition: transform 0.2s var(--spring), background-color 0.15s ease, color 0.15s ease;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.skill-pill-pop:hover {
+  background: var(--ink);
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.07);
+}
+
+.skill-pill-pop:active {
+  transform: scale(0.92);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowUpRight,
   Award,
@@ -50,6 +50,7 @@ export default function App() {
   );
   const [copied, setCopied] = useState(false);
   const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   const toggleSound = () => {
     const next = !soundOn;
@@ -57,6 +58,50 @@ export default function App() {
     setSoundOn(next);
     if (next) playKeyDown('normal');
   };
+
+  // GPU-composited top scroll progress bar (0 React re-renders)
+  useEffect(() => {
+    let rafId = 0;
+    const updateProgress = () => {
+      rafId = 0;
+      const el = progressBarRef.current;
+      if (!el) return;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      el.style.transform = `scaleX(${ratio})`;
+    };
+    const onScroll = () => {
+      if (!rafId) rafId = requestAnimationFrame(updateProgress);
+    };
+    updateProgress();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // Scroll-reveal IntersectionObserver (triggers once per element, re-runs on filter change)
+  useEffect(() => {
+    const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -24px 0px' }
+    );
+    targets.forEach((el) => {
+      if (!el.classList.contains('is-visible')) io.observe(el);
+    });
+    return () => io.disconnect();
+  }, [category]);
 
   const visibleProjects =
     category === 'All' ? PROJECTS : PROJECTS.filter((p) => p.category === category);
@@ -103,6 +148,11 @@ export default function App() {
 
   return (
     <div className="page-shell">
+      {/* === TOP SCROLL PROGRESS BAR === */}
+      <div className="scroll-progress-track" aria-hidden="true">
+        <div ref={progressBarRef} className="scroll-progress-bar" />
+      </div>
+
       {/* === FLOATING STICKY PILL NAV === */}
       <header className="nav-wrap">
         <nav className="pill-nav" aria-label="Primary navigation">
@@ -145,7 +195,7 @@ export default function App() {
           </div>
 
           <div className="hero-content">
-            <div className="hero-identity">
+            <div className="hero-identity hero-stagger" style={{ '--delay': '0ms' } as React.CSSProperties}>
               <button
                 type="button"
                 className="hero-avatar-btn avatar-keycap"
@@ -166,24 +216,27 @@ export default function App() {
               <div className="hero-identity-text">
                 <div className="hero-fullname">{PROFILE.name}</div>
                 <div className="status-pill">
-                  <span className="status-dot" />
+                  <span className="status-dot-wrap" aria-hidden="true">
+                    <span className="status-dot-ring" />
+                    <span className="status-dot" />
+                  </span>
                   <span>Open to Work · {PROFILE.location}</span>
                 </div>
               </div>
             </div>
 
-            <h1 className="hero-title">
+            <h1 className="hero-title hero-stagger" style={{ '--delay': '90ms' } as React.CSSProperties}>
               Turning ideas into{' '}
               <span className="accent">viable apps.</span>
             </h1>
 
-            <p className="hero-sub">
+            <p className="hero-sub hero-stagger" style={{ '--delay': '160ms' } as React.CSSProperties}>
               4th-year BSIT student &amp; Software Engineer crafting fast full-stack web apps,
               cross-platform mobile experiences, and AI-powered tools with React, TypeScript,
               Supabase, and Python.
             </p>
 
-            <div className="cta-row">
+            <div className="cta-row hero-stagger" style={{ '--delay': '230ms' } as React.CSSProperties}>
               <a
                 href={PROFILE.resumePdf}
                 download
@@ -224,7 +277,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="hero-toy">
+          <div className="hero-toy hero-stagger" style={{ '--delay': '180ms' } as React.CSSProperties}>
             <CluckyMascot />
           </div>
         </section>
@@ -254,9 +307,11 @@ export default function App() {
           </div>
 
           <div className="grid-3">
-            {visibleProjects.map((project) => (
+            {visibleProjects.map((project, index) => (
               <div
                 key={project.id}
+                data-reveal
+                style={{ '--reveal-delay': `${(index % 3) * 70}ms` } as React.CSSProperties}
                 role="button"
                 tabIndex={0}
                 onClick={() => setSelectedProject(project)}
@@ -266,7 +321,7 @@ export default function App() {
                     setSelectedProject(project);
                   }
                 }}
-                className="card card-clickable"
+                className="card card-clickable reveal-item"
               >
                 {project.logoVariants && (
                   <ProjectLogoStage
@@ -328,7 +383,7 @@ export default function App() {
             </div>
           </div>
 
-          <article className="exp-card">
+          <article className="exp-card reveal-item" data-reveal>
             <div className="card-top">
               <span className="badge badge-accent">Lead Software Developer (Capstone)</span>
               <span className="card-year">2026 · Manolo Fortich, Bukidnon</span>
@@ -391,10 +446,12 @@ export default function App() {
           </div>
 
           <div className="grid-3">
-            {AWARDS.map((award) => (
+            {AWARDS.map((award, index) => (
               <button
                 key={award.id}
                 type="button"
+                data-reveal
+                style={{ '--reveal-delay': `${index * 70}ms` } as React.CSSProperties}
                 onClick={() =>
                   award.image &&
                   setLightbox({
@@ -403,7 +460,7 @@ export default function App() {
                     image: award.image,
                   })
                 }
-                className="card card-clickable"
+                className="card card-clickable reveal-item"
               >
                 {award.image && (
                   <img
@@ -441,8 +498,13 @@ export default function App() {
           </div>
 
           <div className="grid-2">
-            {CERTIFICATES.map((cert) => (
-              <div key={cert.id} className="card">
+            {CERTIFICATES.map((cert, index) => (
+              <div
+                key={cert.id}
+                data-reveal
+                style={{ '--reveal-delay': `${index * 80}ms` } as React.CSSProperties}
+                className="card reveal-item"
+              >
                 {cert.image && (
                   <button
                     type="button"
@@ -508,7 +570,7 @@ export default function App() {
           </div>
 
           <div className="grid-2">
-            <article className="card">
+            <article className="card reveal-item" data-reveal>
               <div className="card-top">
                 <span className="badge badge-accent">
                   <GraduationCap size={14} /> 4th Year · Expected 2027
@@ -534,7 +596,7 @@ export default function App() {
               </div>
             </article>
 
-            <div className="card">
+            <div className="card reveal-item" data-reveal style={{ '--reveal-delay': '80ms' } as React.CSSProperties}>
               <h3 className="card-title">Technical Toolkit</h3>
               <div style={{ display: 'grid', gap: 12 }}>
                 {SKILL_GROUPS.map((group) => (
@@ -553,9 +615,14 @@ export default function App() {
                     </div>
                     <div className="pill-list" style={{ paddingTop: 0 }}>
                       {group.items.map((item) => (
-                        <span key={item} className="tech-pill">
+                        <button
+                          key={item}
+                          type="button"
+                          onPointerDown={() => playKeyDown('normal')}
+                          className="tech-pill skill-pill-pop"
+                        >
                           {item}
-                        </span>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -567,7 +634,7 @@ export default function App() {
 
         {/* === CONTACT === */}
         <section id="contact" className="section">
-          <div className="contact-card">
+          <div className="contact-card reveal-item" data-reveal>
             <span className="badge" style={{ background: 'rgba(255,255,255,0.12)', color: '#fff' }}>
               Let&apos;s Work Together
             </span>
