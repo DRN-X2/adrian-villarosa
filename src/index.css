@@ -27,6 +27,9 @@ html {
 body {
   margin: 0;
   background-color: var(--bg);
+  background-image: radial-gradient(rgba(17, 17, 17, 0.11) 1.25px, transparent 1.25px);
+  background-size: 22px 22px;
+  background-position: 0 0;
   color: var(--ink);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.5;
