@@ -1,0 +1,25 @@
+{
+  "name": "Adrian Villarosa — Software Engineer",
+  "short_name": "Adrian",
+  "description": "Portfolio of Adrian Villarosa — Full-Stack Web, Mobile & AI Software Engineer.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EDEDED",
+  "theme_color": "#DC2626",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
