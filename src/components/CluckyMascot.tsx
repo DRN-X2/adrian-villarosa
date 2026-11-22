@@ -3,7 +3,25 @@ import { MASCOT_FACTS } from '../data/portfolioData';
 import { playKeyDown, playKeyUp } from '../utils/keySound';
 
 const REACTIONS = ['ROAR!', '</>', 'SHIP IT!', 'GG!', '120Hz', 'BOOM!'];
-const SPARK_COLORS = ['#DC2626', '#111111', '#EF4444', '#FFFFFF'];
+const GOOGLE_SPARKS = ['#EA4335', '#4285F4', '#FBBC05', '#34A853'];
+
+// Cycles: Grey-White -> Google Red -> Google Blue -> Google Yellow -> Google Green
+const KEYCAP_THEMES = [
+  { bg: '#EBEBEB', lip: '#B8B8BE', border: '#D4D4D8' }, // Grey-White
+  { bg: '#EA4335', lip: '#B3261E', border: '#F28B82' }, // Google Red
+  { bg: '#4285F4', lip: '#1967D2', border: '#8AB4F8' }, // Google Blue
+  { bg: '#FBBC05', lip: '#C58B00', border: '#FDE293' }, // Google Yellow
+  { bg: '#34A853', lip: '#188038', border: '#81C995' }, // Google Green
+];
+
+// 5 distinct expressive poses (zero awkward sideways tilt)
+const DINO_POSES = [
+  { src: '/assets/dino-happy.png', transform: 'scaleX(1)', alt: 'Happy developer dinosaur' },
+  { src: '/assets/dino-roar.png', transform: 'scaleX(1)', alt: 'Hyped roaring dinosaur' },
+  { src: '/assets/dino-happy.png', transform: 'scaleX(-1)', alt: 'Curious dinosaur looking left' },
+  { src: '/assets/dino-roar.png', transform: 'scaleX(-1) translateY(-6px) scale(1.06)', alt: 'Jumping roaring dinosaur' },
+  { src: '/assets/dino-roar.png', transform: 'scaleX(1) translateY(-7px) scale(1.08)', alt: 'Super hype dinosaur jump' },
+];
 
 interface Spark {
   id: number;
@@ -18,22 +36,22 @@ export function CluckyMascot() {
 
   const fact = MASCOT_FACTS[clicks % MASCOT_FACTS.length];
   const reaction = REACTIONS[clicks % REACTIONS.length];
-  const isRoaring = clicks % 2 === 1;
+  const theme = KEYCAP_THEMES[clicks % KEYCAP_THEMES.length];
+  const pose = DINO_POSES[clicks % DINO_POSES.length];
 
   const handleTap = () => {
     const next = clicks + 1;
     setClicks(next);
 
-    // Spawn 10 lightweight GPU 8-bit pixel sparks around keycap
     const baseId = Date.now() + next * 100;
-    const burst: Spark[] = Array.from({ length: 10 }, (_, i) => {
-      const angle = (Math.PI * 2 * i) / 10 + (Math.random() * 0.35 - 0.175);
-      const dist = 88 + Math.random() * 44;
+    const burst: Spark[] = Array.from({ length: 12 }, (_, i) => {
+      const angle = (Math.PI * 2 * i) / 12 + (Math.random() * 0.35 - 0.175);
+      const dist = 90 + Math.random() * 46;
       return {
         id: baseId + i,
         tx: `${Math.round(Math.cos(angle) * dist)}px`,
         ty: `${Math.round(Math.sin(angle) * dist)}px`,
-        color: SPARK_COLORS[i % SPARK_COLORS.length],
+        color: GOOGLE_SPARKS[i % GOOGLE_SPARKS.length],
       };
     });
     setSparks(burst);
@@ -76,15 +94,23 @@ export function CluckyMascot() {
           onPointerUp={() => playKeyUp()}
           onClick={handleTap}
           className="mascot-btn mascot-keycap"
-          aria-label="Interactive mechanical dinosaur keycap — click for fun facts about Adrian"
+          style={
+            {
+              '--key-bg': theme.bg,
+              '--key-lip': theme.lip,
+              '--key-border': theme.border,
+            } as React.CSSProperties
+          }
+          aria-label="Interactive Google-color mechanical dinosaur keycap — click to change color and pose"
         >
           <img
-            src={isRoaring ? '/assets/dino-roar.jpg' : '/assets/dino-mascot.jpg'}
-            alt={isRoaring ? 'Hyped roaring developer dinosaur mascot' : 'Happy developer dinosaur mascot'}
+            src={pose.src}
+            alt={pose.alt}
             className="mascot-img"
+            style={{ transform: pose.transform }}
             draggable={false}
           />
-          <link rel="preload" as="image" href="/assets/dino-roar.jpg" />
+          <link rel="preload" as="image" href="/assets/dino-roar.png" />
 
           {clicks > 0 && (
             <span key={clicks} className="mascot-pop-tag" aria-hidden="true">

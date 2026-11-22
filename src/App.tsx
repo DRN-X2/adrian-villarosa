@@ -42,6 +42,19 @@ const NAV_ITEMS = [
 
 const CATEGORIES: ProjectCategory[] = ['All', 'Full-Stack', 'AI / Hackathon', 'Mobile', 'IoT'];
 
+const FLOATING_AV_TOKENS = [
+  { top: '7%', left: '4%', color: '#4285F4', size: '1.5rem', dur: '16s', delay: '0s' },
+  { top: '16%', left: '88%', color: '#EA4335', size: '1.8rem', dur: '19s', delay: '-4s' },
+  { top: '29%', left: '9%', color: '#FBBC05', size: '1.35rem', dur: '21s', delay: '-8s' },
+  { top: '38%', left: '92%', color: '#34A853', size: '1.6rem', dur: '17s', delay: '-2s' },
+  { top: '52%', left: '3%', color: '#EA4335', size: '1.7rem', dur: '20s', delay: '-11s' },
+  { top: '61%', left: '86%', color: '#4285F4', size: '1.4rem', dur: '18s', delay: '-6s' },
+  { top: '74%', left: '7%', color: '#34A853', size: '1.65rem', dur: '22s', delay: '-13s' },
+  { top: '83%', left: '91%', color: '#FBBC05', size: '1.5rem', dur: '16s', delay: '-5s' },
+  { top: '92%', left: '16%', color: '#4285F4', size: '1.3rem', dur: '19s', delay: '-9s' },
+  { top: '45%', left: '50%', color: '#FBBC05', size: '1.25rem', dur: '23s', delay: '-7s' },
+];
+
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [category, setCategory] = useState<ProjectCategory>('All');
@@ -165,7 +178,30 @@ export default function App() {
   };
 
   return (
-    <div className="page-shell">
+    <>
+      {/* === FLOATING GOOGLE-COLOR <AV> BACKGROUND === */}
+      <div className="av-bg-layer" aria-hidden="true">
+        {FLOATING_AV_TOKENS.map((t, i) => (
+          <span
+            key={i}
+            className="av-float-token"
+            style={
+              {
+                top: t.top,
+                left: t.left,
+                color: t.color,
+                fontSize: t.size,
+                animationDuration: t.dur,
+                animationDelay: t.delay,
+              } as React.CSSProperties
+            }
+          >
+            &lt;AV&gt;
+          </span>
+        ))}
+      </div>
+
+      <div className="page-shell">
       {/* === TOP SCROLL PROGRESS BAR === */}
       <div className="scroll-progress-track" aria-hidden="true">
         <div ref={progressBarRef} className="scroll-progress-bar" />
@@ -849,6 +885,7 @@ export default function App() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
