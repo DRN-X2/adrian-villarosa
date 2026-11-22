@@ -6,7 +6,6 @@ const REACTIONS = ['ROAR!', '</>', 'SHIP IT!', 'GG!', '120Hz', 'BOOM!'];
 
 export function CluckyMascot() {
   const [clicks, setClicks] = useState(0);
-  const [bouncing, setBouncing] = useState(false);
 
   const fact = MASCOT_FACTS[clicks % MASCOT_FACTS.length];
   const reaction = REACTIONS[clicks % REACTIONS.length];
@@ -14,8 +13,6 @@ export function CluckyMascot() {
 
   const handleTap = () => {
     setClicks((c) => c + 1);
-    setBouncing(false);
-    requestAnimationFrame(() => setBouncing(true));
   };
 
   return (
@@ -38,8 +35,7 @@ export function CluckyMascot() {
         onPointerDown={() => playKeyDown('heavy')}
         onPointerUp={() => playKeyUp()}
         onClick={handleTap}
-        className={`mascot-btn mascot-keycap ${bouncing ? 'is-bouncing' : ''}`}
-        onAnimationEnd={() => setBouncing(false)}
+        className="mascot-btn mascot-keycap"
         aria-label="Interactive mechanical dinosaur keycap — click for fun facts about Adrian"
       >
         <img
