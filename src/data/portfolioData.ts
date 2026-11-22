@@ -239,15 +239,20 @@ export const AWARDS: AwardItem[] = [
 
 export const CERTIFICATES: CertificateItem[] = [
   {
-    id: 'gdg-devfest-2026',
+    id: 'gdg-devfest-main-2026',
     title: 'DevFest Cagayan de Oro 2026',
     issuer: 'Google Developer Group (GDG) CDO',
-    date: 'Nov 2026',
-    images: [
-      { src: '/assets/cert-devfest-main.jpg', label: 'Main Event 1/2' },
-      { src: '/assets/cert-devfest-roadshow.jpg', label: 'Bukidnon Stop 2/2' },
-    ],
-    skills: ['Google Tech', 'Agentic AI', 'Buildathon'],
+    date: 'Nov 21, 2026',
+    image: '/assets/cert-devfest-main.jpg',
+    skills: ['Google Tech', 'Agentic AI', 'DevFest'],
+  },
+  {
+    id: 'gdg-devfest-roadshow-2026',
+    title: 'DevFest 2026 Buildathon Roadshow: Bukidnon Stop',
+    issuer: 'Google Developer Group (GDG) CDO',
+    date: 'Nov 7, 2026',
+    image: '/assets/cert-devfest-roadshow.jpg',
+    skills: ['Buildathon', 'Agentic AI', 'NBSC'],
   },
   {
     id: 'leb-data',
