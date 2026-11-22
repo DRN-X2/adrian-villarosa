@@ -146,8 +146,8 @@ export default function App() {
             </div>
 
             <h1 className="hero-title">
-              Hi, I&apos;m <span className="accent">Adrian.</span>
-              <br />I build apps that ship.
+              Turning ideas into{' '}
+              <span className="accent">viable apps.</span>
             </h1>
 
             <p className="hero-sub">
@@ -520,7 +520,7 @@ export default function App() {
               Let&apos;s Work Together
             </span>
             <h2 className="section-title" style={{ color: '#ffffff' }}>
-              Ready to build something fast?
+              Let&apos;s build something great together.
             </h2>
             <p>
               Open for Software Engineer, Full-Stack Developer, and Mobile Developer opportunities
