@@ -515,7 +515,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="grid-2">
+          <div className="grid-3">
             {CERTIFICATES.map((cert, index) => {
               const variants = cert.images;
               const activeIdx = certVariantIdx[cert.id] ?? 0;
@@ -536,7 +536,7 @@ export default function App() {
                 <div
                   key={cert.id}
                   data-reveal
-                  style={{ '--reveal-delay': `${(index % 2) * 80}ms` } as React.CSSProperties}
+                  style={{ '--reveal-delay': `${(index % 3) * 70}ms` } as React.CSSProperties}
                   className="card reveal-item"
                 >
                   {activeImg && (

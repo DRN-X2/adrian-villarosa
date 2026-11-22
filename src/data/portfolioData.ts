@@ -276,6 +276,25 @@ export const CERTIFICATES: CertificateItem[] = [
     ],
     skills: ['Prompt Engineering', 'LLMs', 'AI Evaluation'],
   },
+  {
+    id: 'gdg-devfest-2026',
+    title: 'DevFest Cagayan de Oro 2026',
+    issuer: 'Google Developer Group (GDG) CDO',
+    date: 'Nov 2026',
+    images: [
+      { src: '/assets/cert-devfest-main.jpg', label: 'Main Event 1/2' },
+      { src: '/assets/cert-devfest-roadshow.jpg', label: 'Bukidnon Stop 2/2' },
+    ],
+    skills: ['Google Tech', 'Agentic AI', 'Buildathon'],
+  },
+  {
+    id: 'leb-data',
+    title: 'Results & Data Interpretation',
+    issuer: 'London Examinations Board',
+    date: 'Oct 2026',
+    image: '/assets/cert-leb-data.jpg',
+    skills: ['Data Analysis', 'Research', 'Interpretation'],
+  },
 ];
 
 export const SKILL_GROUPS = [
