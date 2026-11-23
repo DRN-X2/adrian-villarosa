@@ -8,6 +8,31 @@ export interface LogoVariant {
   fullBleed?: boolean;
 }
 
+export interface CaseStudyData {
+  projectType: string;
+  role: string;
+  team: string;
+  spotlight?: {
+    label: string;
+    title: string;
+    detail: string;
+  };
+  kpis: { value: string; label: string }[];
+  problem: string;
+  solution: string;
+  design: {
+    systemNote: string;
+    palette: { name: string; hex: string }[];
+    uxDecisions: { title: string; detail: string }[];
+    uiSlots: { title: string; caption: string; device: 'desktop' | 'mobile'; image?: string }[];
+  };
+  engineering: {
+    architectureFlow: { layer: string; step: string; detail: string }[];
+    stackGroups: { label: string; items: string[] }[];
+    highlights: { title: string; detail: string }[];
+  };
+}
+
 export interface ProjectItem {
   id: string;
   title: string;
@@ -23,6 +48,7 @@ export interface ProjectItem {
   githubUrl?: string;
   accentBg: string;
   logoVariants?: LogoVariant[];
+  caseStudy?: CaseStudyData;
 }
 
 export interface AwardItem {
@@ -93,6 +119,96 @@ export const PROJECTS: ProjectItem[] = [
       { src: '/assets/logo-nutrivision.png', bg: '#FFFFFF', label: 'Light' },
       { src: '/assets/logo-nutrivision.png', bg: '#111111', label: 'Dark', dark: true },
     ],
+    caseStudy: {
+      projectType: 'LGU Capstone Project',
+      role: 'Lead Full-Stack Developer',
+      team: 'BSIT Capstone Team · NBSC',
+      spotlight: {
+        label: 'Real Government Client · Capstone Validation',
+        title: 'Municipal Nutrition Action Office (MNAO) — Manolo Fortich, Bukidnon',
+        detail:
+          'Evaluated live via System Usability Scale (SUS) with 10 LGU stakeholders (7 MNAO staff + 3 MISO IT experts), earning 75.50 overall ("Good") and 77.86 among daily MNAO client users.',
+      },
+      kpis: [
+        { value: '14', label: 'PostgreSQL Tables' },
+        { value: '75.50', label: 'Overall SUS Score' },
+        { value: '77.86', label: 'Client Staff SUS' },
+        { value: '4.40/5', label: 'Utility Rating' },
+      ],
+      problem:
+        'MNAO Manolo Fortich managed nutrition commodities, Human Milk Bank inventory, barangay releases, and expiry monitoring entirely through manual paper logbooks—causing slow reporting, transcription errors, and risk of stock expiration.',
+      solution:
+        'Built a unified web-based Nutrition Commodity Inventory & Decision Support System featuring OCR label scanning for rapid intake, automated FEFO (First-Expired, First-Out) alerts, defect/quarantine tracking, and one-click PDF/Excel/CSV reporting.',
+      design: {
+        systemNote:
+          'High-clarity operational dashboard designed for non-technical LGU staff: high-contrast status badges for expiry urgency, scannable tables, and guided batch intake workflows.',
+        palette: [
+          { name: 'Nutri Green', hex: '#16A34A' },
+          { name: 'Alert Orange', hex: '#F97316' },
+          { name: 'Surface White', hex: '#FFFFFF' },
+          { name: 'Ink Slate', hex: '#111827' },
+        ],
+        uxDecisions: [
+          {
+            title: 'FEFO Visual Urgency',
+            detail: 'Color-coded batch expiry tiers surface near-expiring commodities immediately before releases.',
+          },
+          {
+            title: 'Semi-Automated OCR Intake',
+            detail: 'Staff snap commodity labels to pre-fill batch numbers & expiry dates with quick manual override.',
+          },
+          {
+            title: 'Zero-Training Learnability',
+            detail: 'Scored 4.30/5.00 ease of use and 4.10/5.00 learnability among MNAO staff with minimal onboarding.',
+          },
+        ],
+        uiSlots: [
+          {
+            title: 'Inventory & FEFO Dashboard',
+            caption: 'Real-time commodity levels, expiry risk alerts, and quick stock actions.',
+            device: 'desktop',
+          },
+          {
+            title: 'OCR Label Scanner & Batch Intake',
+            caption: 'Camera/image OCR extraction for batch codes and expiration dates.',
+            device: 'desktop',
+          },
+          {
+            title: 'Barangay Distribution & Reports',
+            caption: 'Bulk release logging with automated PDF, Excel, and CSV export history.',
+            device: 'desktop',
+          },
+        ],
+      },
+      engineering: {
+        architectureFlow: [
+          { layer: 'Frontend', step: 'React + Vite UI', detail: 'Modular inventory, milk bank, releases, and reporting views.' },
+          { layer: 'Capture', step: 'OCR Service', detail: 'Extracts batch & expiry strings from physical nutrition labels.' },
+          { layer: 'Database', step: 'Supabase PostgreSQL', detail: '14 normalized relational tables across 3 functional subsystems.' },
+          { layer: 'Output', step: 'FEFO + Exports', detail: 'Automated expiry sorting & instant PDF/Excel/CSV audit reports.' },
+        ],
+        stackGroups: [
+          { label: 'Frontend', items: ['React', 'Vite', 'TypeScript', 'CSS3'] },
+          { label: 'Backend & OCR', items: ['Python', 'FastAPI', 'OCR Integration', 'REST API'] },
+          { label: 'Database & Auth', items: ['Supabase', 'PostgreSQL', '14-Table ERD', 'Role Governance'] },
+          { label: 'Reporting', items: ['PDF Export', 'Excel / CSV', 'FEFO Logic'] },
+        ],
+        highlights: [
+          {
+            title: '14-Table Relational Architecture',
+            detail: 'Separated Inventory & Stock Disposition, Human Milk Bank, and Auth/Governance subsystems with strict FK integrity.',
+          },
+          {
+            title: 'Audit Trail & Soft Voiding',
+            detail: 'Tracks created_by, updated_by, voided_by, defect incidents, and restoration logs for government accountability.',
+          },
+          {
+            title: 'One-Click Audit Exports',
+            detail: 'Replaced hours of manual spreadsheet computation with deterministic PDF, Excel, and CSV downloads.',
+          },
+        ],
+      },
+    },
   },
   {
     id: 'cerebruv',
@@ -117,6 +233,96 @@ export const PROJECTS: ProjectItem[] = [
       { src: '/assets/logo-cerebruv-white.png', bg: '#111111', label: 'Dark', dark: true },
       { src: '/assets/logo-cerebruv-black.png', bg: '#F4F4F5', label: 'Mono' },
     ],
+    caseStudy: {
+      projectType: 'Competition Buildathon',
+      role: 'Full-Stack & Product Engineer',
+      team: 'Team Token Maxxers',
+      spotlight: {
+        label: 'Competition Recognition · GDG Cagayan de Oro',
+        title: 'Champion (Bukidnon Semi-Finals) & Top 5 Regional Finalist — DevFest CDO 2026',
+        detail:
+          'Won 1st Place in the Bukidnon provincial qualifier (Nov 7, 2026) and pitched live on stage at Cinema 1, Limketkai Center (Nov 21, 2026) as one of 5 Northern Mindanao finalists.',
+      },
+      kpis: [
+        { value: '1st', label: 'Bukidnon Semi-Finals' },
+        { value: 'Top 5', label: 'Northern Mindanao' },
+        { value: 'AI', label: 'Gemini Time-Blocking' },
+        { value: 'Live', label: 'Stage Judge Demo' },
+      ],
+      problem:
+        'Students and knowledge workers abandon traditional to-do apps because static lists create decision fatigue—leaving users overwhelmed about what to do next and how long tasks actually take.',
+      solution:
+        'Designed and shipped CereBruv, an AI-assisted productivity & time-blocking web app that turns messy brain-dumps into structured, realistic focus blocks backed by primary user survey research.',
+      design: {
+        systemNote:
+          'Playful yet disciplined crimson-and-monochrome interface with an expressive brain mascot, zero-clutter daily timeline, and thumb-friendly mobile interactions.',
+        palette: [
+          { name: 'CereBruv Red', hex: '#E11D48' },
+          { name: 'Carbon Black', hex: '#111111' },
+          { name: 'Clean Canvas', hex: '#FAFAFA' },
+          { name: 'Muted Slate', hex: '#71717A' },
+        ],
+        uxDecisions: [
+          {
+            title: 'Frictionless Brain-Dump Input',
+            detail: 'Users type raw thoughts instead of filling 6 form fields; AI parses priority and duration automatically.',
+          },
+          {
+            title: 'Visual Time-Block Clarity',
+            detail: 'Replaced endless checkboxes with scannable time slots so users see their exact day at a glance.',
+          },
+          {
+            title: 'Survey-Validated Flows',
+            detail: 'Iterated core screens directly from student survey responses before the regional finals pitch.',
+          },
+        ],
+        uiSlots: [
+          {
+            title: 'AI Daily Planner & Time-Blocking',
+            caption: 'Structured focus timeline generated from natural-language tasks.',
+            device: 'mobile',
+          },
+          {
+            title: 'Task Breakdown & Mind Graph',
+            caption: 'Visual priority mapping and smart scheduling suggestions.',
+            device: 'mobile',
+          },
+          {
+            title: 'Focus Mode & Progress Summary',
+            caption: 'Distraction-free timer with daily completion metrics.',
+            device: 'mobile',
+          },
+        ],
+      },
+      engineering: {
+        architectureFlow: [
+          { layer: 'Client', step: 'React + TypeScript', detail: 'Responsive mobile-first PWA interface built with Vite.' },
+          { layer: 'AI Layer', step: 'Gemini AI API', detail: 'Structured prompting to parse tasks into actionable time blocks.' },
+          { layer: 'Server', step: 'Node.js / Express', detail: 'Handles prompt orchestration, validation, and rate limits.' },
+          { layer: 'Sync', step: 'Realtime State', detail: 'Fast local-first updates synced cleanly with cloud storage.' },
+        ],
+        stackGroups: [
+          { label: 'Frontend', items: ['React', 'TypeScript', 'Vite', 'Responsive PWA'] },
+          { label: 'AI & Prompts', items: ['Gemini AI', 'Structured JSON Output', 'Prompt Engineering'] },
+          { label: 'Backend', items: ['Node.js', 'Express', 'REST APIs'] },
+          { label: 'Validation', items: ['User Survey Research', 'Live Stage Demo'] },
+        ],
+        highlights: [
+          {
+            title: 'Deterministic AI Scheduling',
+            detail: 'Constrained Gemini outputs into structured schedule blocks with fallback handling for quota limits.',
+          },
+          {
+            title: 'Rapid Hackathon Execution',
+            detail: 'Went from user survey validation to live deployed product demo across provincial qualifiers and regional finals.',
+          },
+          {
+            title: 'Mobile-First Performance',
+            detail: 'Lightweight Vite bundle tuned for smooth transitions during live stage presentations.',
+          },
+        ],
+      },
+    },
   },
   {
     id: 'beside',
@@ -141,6 +347,96 @@ export const PROJECTS: ProjectItem[] = [
       { src: '/assets/logo-beside-happy.jpg', bg: '#7E4228', label: 'Happy', dark: true, fullBleed: true },
       { src: '/assets/logo-beside-think.jpg', bg: '#7E4228', label: 'Thinking', dark: true, fullBleed: true },
     ],
+    caseStudy: {
+      projectType: 'Flagship Full-Stack PWA',
+      role: 'Creator & Full-Stack Engineer',
+      team: 'Solo / Indie Product Build',
+      spotlight: {
+        label: 'Production Deployed PWA',
+        title: 'Live Installable Mobile Web App on Vercel',
+        detail:
+          'Built end-to-end with 700KB+ of modular TypeScript and 22KB of PostgreSQL PL/pgSQL functions—delivering native-feeling duo study rooms directly in the browser.',
+      },
+      kpis: [
+        { value: 'PWA', label: 'Installable Mobile App' },
+        { value: '707 KB', label: 'TypeScript Codebase' },
+        { value: 'PL/pgSQL', label: 'Supabase RPC Logic' },
+        { value: 'Leaflet', label: 'Live Map Discovery' },
+      ],
+      problem:
+        'Solo studying leads to procrastination and burnout, yet existing study tools are either lonely timers or cluttered Discord servers with zero structured accountability.',
+      solution:
+        'Created Beside—a warm, mascot-driven Progressive Web App pairing learners into gamified duo focus sessions with onboarding matchmaking, map discovery, and study history analytics.',
+      design: {
+        systemNote:
+          'Cozy coffee-and-cream palette anchored by an expressive 3D otter mascot that reacts to study states, making accountability feel friendly rather than stressful.',
+        palette: [
+          { name: 'Espresso Brown', hex: '#7E4228' },
+          { name: 'Warm Cream', hex: '#F1F1F1' },
+          { name: 'Card White', hex: '#FFFFFF' },
+          { name: 'Deep Ink', hex: '#1F2937' },
+        ],
+        uxDecisions: [
+          {
+            title: 'Emotional Mascot Feedback',
+            detail: 'Expressive otter companion guides onboarding, focus sessions, and streak milestones.',
+          },
+          {
+            title: 'Portrait-First Mobile Ergonomics',
+            detail: 'Bottom-reachable navigation and clean card hierarchy built specifically for one-handed phone use.',
+          },
+          {
+            title: 'Low-Friction Duo Matching',
+            detail: 'Streamlined onboarding pairs students by subject and schedule in under a minute.',
+          },
+        ],
+        uiSlots: [
+          {
+            title: 'Home & Duo Focus Room',
+            caption: 'Live collaborative study timer with partner presence and session status.',
+            device: 'mobile',
+          },
+          {
+            title: 'Connections & Map Discovery',
+            caption: 'Interactive Leaflet map and peer matchmaking directory.',
+            device: 'mobile',
+          },
+          {
+            title: 'Study History & Profile Analytics',
+            caption: 'Visualized session streaks, focus hours, and personal milestones.',
+            device: 'mobile',
+          },
+        ],
+      },
+      engineering: {
+        architectureFlow: [
+          { layer: 'Client', step: 'React + Zustand', detail: 'Modular feature slices with predictable global state.' },
+          { layer: 'Maps', step: 'React-Leaflet', detail: 'Lightweight interactive map rendering for peer discovery.' },
+          { layer: 'Backend', step: 'Supabase + PL/pgSQL', detail: 'Auth, relational tables, and custom database functions.' },
+          { layer: 'Delivery', step: 'Vercel PWA', detail: 'Manifest-configured standalone app with instant CDN edge delivery.' },
+        ],
+        stackGroups: [
+          { label: 'Frontend', items: ['React', 'TypeScript', 'Vite', 'React Router', 'Lucide'] },
+          { label: 'State & Geo', items: ['Zustand', 'Leaflet', 'React-Leaflet', 'date-fns'] },
+          { label: 'Backend & DB', items: ['Supabase', 'PostgreSQL', 'PL/pgSQL', 'Auth'] },
+          { label: 'Deployment', items: ['Vercel', 'PWA Manifest', 'Mobile-First'] },
+        ],
+        highlights: [
+          {
+            title: 'Clean Modular Architecture',
+            detail: 'Organized into dedicated modules, services, stores, types, and shared UI primitives for maintainability.',
+          },
+          {
+            title: 'Database-Level Business Logic',
+            detail: 'Offloaded critical matchmaking and study-log integrity rules into PostgreSQL PL/pgSQL functions.',
+          },
+          {
+            title: 'Standalone PWA Experience',
+            detail: 'Configured full maskable icon sets and standalone viewport rules for iOS/Android home screens.',
+          },
+        ],
+      },
+    },
   },
   {
     id: 'aegis',
@@ -183,6 +479,96 @@ export const PROJECTS: ProjectItem[] = [
       { src: '/assets/logo-kablehero.png', bg: '#FFFFFF', label: 'Original' },
       { src: '/assets/logo-kablehero-alt.png', bg: '#FFFFFF', label: 'Inverted' },
     ],
+    caseStudy: {
+      projectType: 'Civic Tech Competition Build',
+      role: 'Full-Stack & Mobile PWA Developer',
+      team: 'Team Token Maxxers',
+      spotlight: {
+        label: 'Civic Safety & Dispatch Innovation',
+        title: 'Crowdsourced Electric Hazard Triage for Philippine Cooperatives & Barangays',
+        detail:
+          'Designed to solve post-typhoon reporting chaos—turning vague hotline calls into GPS-pinned, photo-backed, community-verified hazard tickets in 3 taps behind a safe-distance gate.',
+      },
+      kpis: [
+        { value: '3 Taps', label: 'Hazard Ticket Flow' },
+        { value: '372 KB', label: 'TypeScript App' },
+        { value: 'Realtime', label: 'Triage Map Sync' },
+        { value: '3 Tiers', label: 'Civic XP Progression' },
+      ],
+      problem:
+        'After typhoons and road accidents in the Philippines, downed power poles and live wires get reported through congested hotlines or social posts with no GPS coordinates and no visual proof—delaying emergency dispatch.',
+      solution:
+        'Built KableHero Lite, a mobile-first civic PWA combining 3-tap GPS + photo reporting, a mandatory safe-distance hold gate, a live color-coded triage map with community verification, and gamified civic tiers.',
+      design: {
+        systemNote:
+          'High-visibility safety-amber and stark black industrial palette engineered for outdoor sunlight legibility and stress-free emergency tapping.',
+        palette: [
+          { name: 'Hazard Amber', hex: '#D97706' },
+          { name: 'Line Black', hex: '#111111' },
+          { name: 'Safety White', hex: '#FFFFFF' },
+          { name: 'Urgent Red', hex: '#DC2626' },
+        ],
+        uxDecisions: [
+          {
+            title: '3-Tap Emergency Flow',
+            detail: 'Large touch targets let stressed residents capture GPS, photo, and hazard severity in seconds.',
+          },
+          {
+            title: 'Safe-Distance Hold Gate',
+            detail: 'Intentional press-and-hold safety confirmation reminds citizens to stay clear of live wires before submitting.',
+          },
+          {
+            title: 'Gamified Civic Stewardship',
+            detail: 'XP tiers (Purok Scout → Tanod Specialist → Master Lineman) reward accurate community hazard verification.',
+          },
+        ],
+        uiSlots: [
+          {
+            title: '3-Tap Hazard Reporter & Safety Gate',
+            caption: 'GPS lock, photo capture, 3-tier severity picker, and safe-distance hold button.',
+            device: 'mobile',
+          },
+          {
+            title: 'Realtime Dispatch Triage Map',
+            caption: 'Color-coded hazard pins, community verification counts, and live crew status.',
+            device: 'mobile',
+          },
+          {
+            title: 'Civic Profile & XP Progression',
+            caption: 'Reporter history, verified badges, and Purok Scout → Master Lineman tiers.',
+            device: 'mobile',
+          },
+        ],
+      },
+      engineering: {
+        architectureFlow: [
+          { layer: 'Reporter', step: 'Mobile PWA + GPS', detail: 'Captures browser geolocation, compressed photo, and severity tier.' },
+          { layer: 'Backend', step: 'Supabase + PL/pgSQL', detail: 'Persists tickets, verification votes, and XP tier calculations.' },
+          { layer: 'Realtime', step: 'Live Triage Map', detail: 'Streams color-coded pin updates and dispatcher status changes.' },
+          { layer: 'Auth', step: 'Email & Google Auth', detail: 'Accountable reporting linked to citizen profiles and audit logs.' },
+        ],
+        stackGroups: [
+          { label: 'Frontend', items: ['React', 'TypeScript', 'Radix UI', 'Mobile PWA'] },
+          { label: 'Backend & DB', items: ['Supabase', 'PostgreSQL', 'PL/pgSQL', 'Realtime'] },
+          { label: 'Geo & Media', items: ['Geolocation API', 'Photo Upload', 'Triage Map'] },
+          { label: 'Auth & Security', items: ['Google Sign-In', 'Email Auth', 'Safe-Distance Gate'] },
+        ],
+        highlights: [
+          {
+            title: 'Community Deduplication & Voting',
+            detail: 'Verification counts allow dispatchers to prioritize confirmed high-risk live-wire incidents first.',
+          },
+          {
+            title: 'Accessible Radix UI Primitives',
+            detail: 'Built dialogs, alerts, and severity controls with keyboard- and screen-reader-safe Radix components.',
+          },
+          {
+            title: '20KB PL/pgSQL Workflow Layer',
+            detail: 'Encapsulated XP scoring, ticket state transitions, and civic rank upgrades cleanly in PostgreSQL.',
+          },
+        ],
+      },
+    },
   },
   {
     id: 'arduino-robot',

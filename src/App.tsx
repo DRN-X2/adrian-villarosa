@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { CluckyMascot } from './components/CluckyMascot';
+import { ProjectCaseStudy } from './components/ProjectCaseStudy';
 import { ProjectLogoStage } from './components/ProjectLogoStage';
 import { isSoundEnabled, playKeyDown, playKeyUp, setSoundEnabled } from './utils/keySound';
 import {
@@ -55,7 +56,14 @@ const FLOATING_AV_TOKENS = [
   { top: '45%', left: '50%', color: '#FBBC05', size: '1.25rem', dur: '23s', delay: '-7s' },
 ];
 
+function getProjectIdFromPath(): string | null {
+  if (typeof window === 'undefined') return null;
+  const match = window.location.pathname.match(/^\/project\/([^/]+)\/?$/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export default function App() {
+  const [routeProjectId, setRouteProjectId] = useState<string | null>(() => getProjectIdFromPath());
   const [activeSection, setActiveSection] = useState('home');
   const [category, setCategory] = useState<ProjectCategory>('All');
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
@@ -66,6 +74,33 @@ export default function App() {
   const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
   const [certVariantIdx, setCertVariantIdx] = useState<Record<string, number>>({});
   const progressBarRef = useRef<HTMLDivElement>(null);
+
+  const flagshipProjects = PROJECTS.filter((p) => Boolean(p.caseStudy));
+  const activeCaseStudy = routeProjectId
+    ? flagshipProjects.find((p) => p.id === routeProjectId) ?? null
+    : null;
+
+  const openProjectPage = (projectId: string) => {
+    window.history.pushState({}, '', `/project/${projectId}`);
+    setRouteProjectId(projectId);
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  };
+
+  const goHome = () => {
+    window.history.pushState({}, '', '/');
+    setRouteProjectId(null);
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  };
+
+  // Browser Back / Forward sync
+  useEffect(() => {
+    const onPopState = () => {
+      setRouteProjectId(getProjectIdFromPath());
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   const toggleSound = () => {
     const next = !soundOn;
@@ -132,7 +167,7 @@ export default function App() {
     });
 
     return () => io.disconnect();
-  }, [category]);
+  }, [category, routeProjectId]);
 
   const visibleProjects =
     category === 'All' ? PROJECTS : PROJECTS.filter((p) => p.category === category);
@@ -176,6 +211,51 @@ export default function App() {
       window.location.href = `mailto:${PROFILE.email}`;
     }
   };
+
+  if (activeCaseStudy) {
+    const idx = flagshipProjects.findIndex((p) => p.id === activeCaseStudy.id);
+    const prevProject = flagshipProjects[(idx - 1 + flagshipProjects.length) % flagshipProjects.length];
+    const nextProject = flagshipProjects[(idx + 1) % flagshipProjects.length];
+
+    return (
+      <>
+        <div className="av-bg-layer" aria-hidden="true">
+          {FLOATING_AV_TOKENS.map((t, i) => (
+            <span
+              key={i}
+              className="av-float-token"
+              style={
+                {
+                  top: t.top,
+                  left: t.left,
+                  color: t.color,
+                  fontSize: t.size,
+                  animationDuration: t.dur,
+                  animationDelay: t.delay,
+                } as React.CSSProperties
+              }
+            >
+              &lt;AV&gt;
+            </span>
+          ))}
+        </div>
+
+        <div className="scroll-progress-track" aria-hidden="true">
+          <div ref={progressBarRef} className="scroll-progress-bar" />
+        </div>
+
+        <ProjectCaseStudy
+          project={activeCaseStudy}
+          prevProject={prevProject}
+          nextProject={nextProject}
+          onBack={goHome}
+          onNavigate={openProjectPage}
+          soundOn={soundOn}
+          onToggleSound={toggleSound}
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -361,18 +441,26 @@ export default function App() {
           </div>
 
           <div className="grid-3">
-            {visibleProjects.map((project, index) => (
+            {visibleProjects.map((project, index) => {
+              const hasCaseStudy = Boolean(project.caseStudy);
+              const handleOpen = () => {
+                playKeyDown('normal');
+                if (hasCaseStudy) openProjectPage(project.id);
+                else setSelectedProject(project);
+              };
+
+              return (
               <div
                 key={project.id}
                 data-reveal
                 style={{ '--reveal-delay': `${(index % 3) * 70}ms` } as React.CSSProperties}
                 role="button"
                 tabIndex={0}
-                onClick={() => setSelectedProject(project)}
+                onClick={handleOpen}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    setSelectedProject(project);
+                    handleOpen();
                   }
                 }}
                 className="card card-clickable reveal-item"
@@ -406,7 +494,7 @@ export default function App() {
 
                 <div className="card-actions">
                   <span className="card-footer-hint" style={{ marginTop: 0 }}>
-                    Inspect build <ArrowUpRight size={15} />
+                    {hasCaseStudy ? 'Open project' : 'Inspect build'} <ArrowUpRight size={15} />
                   </span>
 
                   <div className="card-action-links">
@@ -424,7 +512,8 @@ export default function App() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
