@@ -89,6 +89,7 @@ export default function App() {
   const goHome = () => {
     window.history.pushState({}, '', '/');
     setRouteProjectId(null);
+    setActiveSection('home');
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   };
 
@@ -131,7 +132,7 @@ export default function App() {
       window.removeEventListener('resize', onScroll);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [routeProjectId]);
 
   // Scroll-reveal IntersectionObserver using data-visible (never overwritten by React re-renders)
   useEffect(() => {
@@ -172,8 +173,9 @@ export default function App() {
   const visibleProjects =
     category === 'All' ? PROJECTS : PROJECTS.filter((p) => p.category === category);
 
-  // Lightweight IntersectionObserver for active pill highlight (0 scroll-listener lag)
+  // Lightweight IntersectionObserver for active pill highlight (re-binds when returning from Case Study)
   useEffect(() => {
+    if (routeProjectId) return;
     const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(
       (el): el is HTMLElement => el !== null
     );
@@ -188,7 +190,7 @@ export default function App() {
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, []);
+  }, [routeProjectId]);
 
   // Close modal/lightbox on Escape
   useEffect(() => {
@@ -281,13 +283,13 @@ export default function App() {
         ))}
       </div>
 
-      <div className="page-shell">
-      {/* === TOP SCROLL PROGRESS BAR === */}
+      {/* === TOP SCROLL PROGRESS BAR (same tree position across routes) === */}
       <div className="scroll-progress-track" aria-hidden="true">
         <div ref={progressBarRef} className="scroll-progress-bar" />
       </div>
 
-      {/* === FLOATING STICKY PILL NAV === */}
+      <div className="page-shell">
+        {/* === FLOATING STICKY PILL NAV === */}
       <header className="nav-wrap">
         <nav className="pill-nav" aria-label="Primary navigation">
           {NAV_ITEMS.map((item) => (
